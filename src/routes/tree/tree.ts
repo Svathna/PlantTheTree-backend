@@ -13,7 +13,10 @@ const app = Router();
  * GET: Get all trees `/tree`
  */
 app.get('/', async (req, res) => {
-  const trees = await TreeModel.find({ deleted: false });
+  const trees = await TreeModel.find({ deleted: false }).populate({
+    path: 'owner',
+    match: { deleted: false },
+  });
   // sanity check for user
   if (trees.length === 0) {
     return res.status(400).json({ success: false, message: 'Tree do not exist in the Database' });
@@ -27,18 +30,19 @@ app.get('/', async (req, res) => {
  */
 app.post(
   '/',
-  requires({ body: ['name', 'photo', 'location', 'description'] }),
+  requires({ body: ['name', 'photo', 'location', 'description', 'owner'] }),
 
   async (req, res) => {
     try {
       // get this piece of info
-      const { name, photo, location, description} = req.body;
+      const { name, photo, location, description, owner } = req.body;
 
-      let treeProperties = {
+      const treeProperties = {
         name,
         photo,
         location,
         description,
+        owner,
       };
       const tree = new TreeModel(treeProperties);
       // save new tree

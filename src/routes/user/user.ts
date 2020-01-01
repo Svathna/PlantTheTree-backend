@@ -19,7 +19,7 @@ const app = Router();
 /**
  * GET: Get all users `/user`
  */
-app.get('/',withAuth ,async (req, res) => {
+app.get('/', withAuth, async (req, res) => {
   // get user from req acquired in with auth middleware
   const users = await UserModel.find({ deleted: false });
   // sanity check for user
@@ -122,7 +122,7 @@ app.post('/login', requires({ body: ['email', 'password'] }), async (req, res) =
  */
 app.post(
   '/',
-  requires({ body: ['firstName', 'lastName', 'email', 'password', 'type'] }),
+  requires({ body: ['firstName', 'lastName', 'email', 'password', 'type', 'phoneNumber'] }),
   validateString('firstName'),
   validateString('lastName'),
   validateEmail('email'),
@@ -132,7 +132,7 @@ app.post(
   async (req, res) => {
     try {
       // get this piece of info
-      const { firstName, lastName, email, password, type } = req.body;
+      const { firstName, lastName, email, password, type, phoneNumber } = req.body;
       // get errors
       const errors = validationResult(req);
       // check for errors
@@ -147,12 +147,13 @@ app.post(
         // send errors
         return res.status(400).json({ success: false, message: 'Email is in use' });
       }
-      let userProperties = {
+      const userProperties = {
         firstName,
         lastName,
         email,
         password,
-        type
+        type,
+        phoneNumber,
       };
       const user = new UserModel(userProperties);
       // generate hash from password

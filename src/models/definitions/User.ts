@@ -16,7 +16,7 @@ class User extends Typegoose {
 
   @prop({
     enum: UserType,
-    required: true
+    required: true,
   })
   type?: UserType;
 
@@ -29,6 +29,9 @@ class User extends Typegoose {
     },
   })
   email: string;
+
+  @prop({})
+  phoneNumber: number;
 
   @prop({ default: [] })
   registrationTokens: string[];
