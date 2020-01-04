@@ -122,9 +122,8 @@ app.post('/login', requires({ body: ['email', 'password'] }), async (req, res) =
  */
 app.post(
   '/',
-  requires({ body: ['firstName', 'lastName', 'email', 'password', 'type', 'phoneNumber'] }),
-  validateString('firstName'),
-  validateString('lastName'),
+  requires({ body: ['fullName', 'email', 'password', 'type', 'phoneNumber'] }),
+  validateString('fullName'),
   validateEmail('email'),
   validatePassword('password'),
   validateUserType('type'),
@@ -132,7 +131,7 @@ app.post(
   async (req, res) => {
     try {
       // get this piece of info
-      const { firstName, lastName, email, password, type, phoneNumber } = req.body;
+      const { fullName, email, password, type, phoneNumber } = req.body;
       // get errors
       const errors = validationResult(req);
       // check for errors
@@ -148,8 +147,7 @@ app.post(
         return res.status(400).json({ success: false, message: 'Email is in use' });
       }
       const userProperties = {
-        firstName,
-        lastName,
+        fullName,
         email,
         password,
         type,

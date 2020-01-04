@@ -9,10 +9,7 @@ export enum UserType {
 
 class User extends Typegoose {
   @prop({ required: true })
-  firstName: string;
-
-  @prop({ required: true })
-  lastName: string;
+  fullName: string;
 
   @prop({
     enum: UserType,
@@ -92,8 +89,7 @@ class User extends Typegoose {
   @instanceMethod
   getUserSafe(this: InstanceType<User>) {
     return {
-      firstName: this.firstName,
-      lastName: this.lastName,
+      fullName: this.fullName,
       email: this.email,
     };
   }
