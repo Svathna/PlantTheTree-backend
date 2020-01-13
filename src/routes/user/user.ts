@@ -33,7 +33,7 @@ app.get('/', withAuth, async (req, res) => {
 /**
  * GET: Get one user `/user/:id`
  */
-app.get('/:id', requires({ params: ['id'] }), async (req, res) => {
+app.get('/:id', withAuth, requires({ params: ['id'] }), async (req, res) => {
   const { id } = req.params;
   // get user with id
   const user = await UserModel.findOne({ _id: id, deleted: false });
@@ -171,52 +171,49 @@ app.post(
   },
 );
 
-// /**
-//  * PATCH: Update a user `/user/:id`
-//  */
-// app.patch(
-//   '/:id',
-//   withAuth,
-//   requires({ params: ['id'], body: ['firstName', 'lastName', 'email'] }),
-//   validateString('firstName'),
-//   validateString('lastName'),
-//   validateEmail('email'),
-//   async (req, res) => {
-//     try {
-//       const { id } = req.params;
-//       const { firstName, lastName, email, photo, password } = req.body;
-//       // if password
-//       let newValue = {
-//         firstName,
-//         lastName,
-//         email,
-//       };
-//       if (password) {
-//         newValue = Object.assign(newValue, { password });
-//       }
-//       // check if photo
-//       if (photo) {
-//         newValue = Object.assign(newValue, { photo });
-//       }
-//       const user = await UserModel.findByIdAndUpdate({ _id: id }, newValue, { new: true });
-//       if (!user) {
-//         return res.status(400).json({ success: false, message: 'User not found' });
-//       }
-//       if (password) {
-//         await user.generateHash(password);
-//       }
-//       await user.save();
-//       return res.json({
-//         user,
-//         success: true,
-//         message: 'Update successful!',
-//       });
-//     } catch (e) {
-//       // send errors
-//       return res.status(500).json({ success: false, message: e });
-//     }
-//   },
-// );
+/**
+ * PATCH: Update a user `/user/:id`
+ */
+app.patch(
+  '/:id',
+  withAuth,
+  requires({ params: ['id'], body: ['fullName', 'email', 'phoneNumber'] }),
+  validateString('fullName'),
+  validateString('email'),
+  validateEmail('phoneNumber'),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { fullName, email, photo, password, phoneNumber } = req.body;
+      // if password
+      let newValue = {
+        fullName,
+        email,
+        phoneNumber,
+      };
+      // check if photo
+      if (photo) {
+        newValue = Object.assign(newValue, { photo });
+      }
+      const user = await UserModel.findByIdAndUpdate({ _id: id }, newValue, { new: true });
+      if (!user) {
+        return res.status(400).json({ success: false, message: 'User not found' });
+      }
+      if (password) {
+        await user.generateHash(password);
+      }
+      await user.save();
+      return res.json({
+        user,
+        success: true,
+        message: 'Update successful!',
+      });
+    } catch (e) {
+      // send errors
+      return res.status(500).json({ success: false, message: e });
+    }
+  },
+);
 
 // /**
 //  * DELETE: Remove a user `/user/:id`

@@ -26,6 +26,27 @@ app.get('/', async (req, res) => {
 });
 
 /**
+ * GET: Get tree by id `/tree/:id`
+ */
+app.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const tree = await TreeModel.findOne({ _id: id, deleted: false }).populate({
+      path: 'owner',
+      match: { deleted: false },
+    });
+    // sanity check for user
+    if (!tree) {
+      return res.status(400).json({ success: false, message: 'Tree can not found' });
+    }
+    // send the user back
+    return res.json({ tree, success: true, message: 'Success' });
+  } catch (error) {
+    return res.json({ success: false, error });
+  }
+});
+
+/**
  * POST: Create a tree `/tree`
  */
 app.post(
