@@ -74,12 +74,21 @@ app.get('/user/:id', async (req, res) => {
  */
 app.post(
   '/',
-  requires({ body: ['name', 'photo', 'location', 'description', 'owner'] }),
+  requires({ body: ['name', 'location', 'description', 'owner', 'imageFile'] }),
 
   async (req, res) => {
     try {
       // get this piece of info
-      const { name, photo, location, description, owner } = req.body;
+      const { name, location, description, owner, imageFile } = req.body;
+
+      let photo;
+
+      cloudinary.uploader.upload('my_picture.jpg', function (error: any, result: any) {
+        console.log(result);
+        if (result) {
+          photo = result.url;
+        }
+      });
 
       const treeProperties = {
         name,
